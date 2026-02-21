@@ -1,0 +1,17 @@
+{
+  "app_name": "WorkLoad Manager",
+  "pattern": "single_agent",
+  "agents": [
+    {
+      "node_id": "workload_agent",
+      "agent_id": "69999ae02a0c0e9d62090644",
+      "agent_name": "WorkLoad Agent",
+      "agent_type": "text",
+      "provider": "openai",
+      "model": "gpt-4.1"
+    }
+  ],
+  "knowledge_bases": [],
+  "schedules": [],
+  "created_at": "2026-02-21"
+}

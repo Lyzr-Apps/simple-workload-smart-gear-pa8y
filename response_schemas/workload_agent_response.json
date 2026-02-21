@@ -1,0 +1,14 @@
+{
+  "agent_name": "WorkLoad Agent",
+  "agent_id": "69999ae02a0c0e9d62090644",
+  "description": "Receives task lists, data, or documents from users, categorizes them, prioritizes them, and provides concise summaries. Also answers follow-up questions.",
+  "agent_type": "json",
+  "accessor": "result",
+  "auto_generated": true,
+  "response_schema": {
+    "response": "string"
+  },
+  "example_response": {
+    "response": "The main response text from the agent containing the organized tasks, summaries, or answers to follow-up questions. Supports markdown formatting."
+  }
+}
