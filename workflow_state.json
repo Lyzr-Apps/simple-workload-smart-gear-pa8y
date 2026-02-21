@@ -6,7 +6,8 @@
       "node_id": "workload_agent",
       "agent_id": "69999ae02a0c0e9d62090644",
       "agent_name": "WorkLoad Agent",
-      "agent_type": "text",
+      "agent_type": "text_and_image",
+      "has_image_output": true,
       "provider": "openai",
       "model": "gpt-4.1"
     }

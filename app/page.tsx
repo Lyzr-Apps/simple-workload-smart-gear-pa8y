@@ -20,6 +20,8 @@ import {
   HiOutlineX,
   HiOutlineChatAlt2,
   HiOutlineRefresh,
+  HiOutlineDownload,
+  HiOutlinePhotograph,
 } from 'react-icons/hi'
 import { RiRobot2Line } from 'react-icons/ri'
 import { BsCircleFill } from 'react-icons/bs'
@@ -35,6 +37,7 @@ interface ChatMessage {
   content: string
   timestamp: string
   copied?: boolean
+  imageUrls?: string[]
 }
 
 interface Conversation {
@@ -111,7 +114,7 @@ const SAMPLE_CONVERSATIONS: Conversation[] = [
 
 const PROMPT_SUGGESTIONS = [
   'จัดลำดับความสำคัญของงานที่ต้องทำวันนี้',
-  'สรุปรายการประชุมสัปดาห์นี้',
+  'สรุปรายการประชุมสัปดาห์นี้ เป็นรูปภาพ',
   'ช่วยจัดหมวดหมู่งานที่ค้างอยู่',
 ]
 
@@ -254,6 +257,8 @@ function MessageBubble({
     )
   }
 
+  const hasImages = Array.isArray(message.imageUrls) && message.imageUrls.length > 0
+
   return (
     <div className="flex items-start gap-3 mb-4 group">
       <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0 mt-0.5">
@@ -262,6 +267,30 @@ function MessageBubble({
       <div className="max-w-[75%]">
         <div className="glass rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm relative">
           {renderMarkdown(message.content)}
+          {hasImages && (
+            <div className="mt-3 space-y-3">
+              {message.imageUrls!.map((url, idx) => (
+                <div key={idx} className="relative group/img rounded-xl overflow-hidden border border-border">
+                  <img
+                    src={url}
+                    alt={`Generated summary image ${idx + 1}`}
+                    className="w-full h-auto rounded-xl"
+                    loading="lazy"
+                  />
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download
+                    className="absolute top-2 right-2 p-2 rounded-lg bg-black/50 hover:bg-black/70 text-white transition-all opacity-0 group-hover/img:opacity-100"
+                    aria-label="Download image"
+                  >
+                    <HiOutlineDownload className="w-4 h-4" />
+                  </a>
+                </div>
+              ))}
+            </div>
+          )}
           <button
             onClick={() => onCopy(message.id, message.content)}
             className="absolute top-2 right-2 p-1.5 rounded-lg bg-background/60 hover:bg-background/90 text-muted-foreground hover:text-foreground transition-all opacity-0 group-hover:opacity-100"
@@ -535,8 +564,17 @@ export default function Page() {
         })
 
         let agentText = ''
+        let imageUrls: string[] = []
         if (result.success) {
           agentText = result?.response?.result?.response || extractText(result.response) || 'ได้รับคำตอบแต่ไม่มีเนื้อหา'
+
+          // Extract images from module_outputs (top-level, NOT inside response)
+          const artifactFiles = result?.module_outputs?.artifact_files
+          if (Array.isArray(artifactFiles) && artifactFiles.length > 0) {
+            imageUrls = artifactFiles
+              .filter((f: any) => f?.file_url && typeof f.file_url === 'string')
+              .map((f: any) => f.file_url)
+          }
         } else {
           const errorMsg: ChatMessage = {
             id: generateUUID(),
@@ -561,6 +599,7 @@ export default function Page() {
           role: 'agent',
           content: agentText,
           timestamp: new Date().toISOString(),
+          imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
         }
 
         setConversations((prev) =>

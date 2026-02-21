@@ -4,6 +4,7 @@
   "description": "Receives task lists, data, or documents from users, categorizes them, prioritizes them, and provides concise summaries. Also answers follow-up questions.",
   "agent_type": "json",
   "accessor": "result",
+  "has_module_outputs": true,
   "auto_generated": true,
   "response_schema": {
     "response": "string"
